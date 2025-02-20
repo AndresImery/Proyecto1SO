@@ -25,8 +25,8 @@ public class PCB {
     public enum Estado { LISTO, EJECUTANDO, BLOQUEADO, TERMINADO }
 
     // Constructor
-    public PCB(int processId, String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, int tiempoLlegada) {
-        this.processId = processId;
+    public PCB(String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, int tiempoLlegada) {
+        this.processId = processId++;
         this.nombre = nombre;
         this.estado = Estado.LISTO;
         this.programCounter = 0;
@@ -39,6 +39,8 @@ public class PCB {
         this.tiempoServicio = 0;
         this.tiempoLlegada = tiempoLlegada;
     }
+    
+    
 
     // Métodos para cambiar el estado del proceso
     public void setEstado(Estado estado) {

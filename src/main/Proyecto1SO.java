@@ -4,6 +4,8 @@
  */
 package main;
 
+import com.google.gson.Gson;
+
 /**
  *
  * @author andresimery
@@ -14,7 +16,8 @@ public class Proyecto1SO {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        Gson gson = new Gson();
+        System.out.println("✅ Gson instalado correctamente.");
     }
     
 }
