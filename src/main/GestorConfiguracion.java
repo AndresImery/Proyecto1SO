@@ -22,6 +22,7 @@ public class GestorConfiguracion {
     private int numCPUs;
     private LinkedList<Proceso> procesosCargados;
     private ArrayList<ConfigProceso> auxProcesos;
+    private int quantum;
 
     // Constructor
     public GestorConfiguracion() {
@@ -30,6 +31,7 @@ public class GestorConfiguracion {
         this.numCPUs = 0;
         this.procesosCargados = new LinkedList<Proceso>();
         this.auxProcesos = new ArrayList<>();
+        this.quantum = 5;
     }
     
     // Cargar configuración desde JSON con Gson
@@ -74,6 +76,18 @@ public class GestorConfiguracion {
     public void guardarEnJSON() {
         try (Writer writer = new FileWriter(rutaArchivo)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            auxProcesos = new ArrayList<ConfigProceso>();
+            
+            Node<Proceso> aux = procesosCargados.getHead();
+            PCB data = aux.getData().getPCB();
+            auxProcesos.add(new ConfigProceso(data.getNombre(), data.getInstruccionesTotales(), data.esCPUBound(), data.getCiclosPorExcepcion(), data.getCiclosParaDesbloqueo()));
+            while (aux.getNext() != null) {
+                data = aux.getNext().getData().getPCB();
+                auxProcesos.add(new ConfigProceso(data.getNombre(), data.getInstruccionesTotales(), data.esCPUBound(), data.getCiclosPorExcepcion(), data.getCiclosParaDesbloqueo()));
+                
+                aux = aux.getNext();
+            }
+            
             Configuracion config = new Configuracion(duracionCiclo, numCPUs, auxProcesos);
             gson.toJson(config, writer);
             System.out.println("Configuración guardada en JSON con Gson.");
@@ -113,6 +127,7 @@ public class GestorConfiguracion {
             }
             
             
+            
         }
     
     public String getRutaArchivo() {
@@ -147,12 +162,13 @@ public class GestorConfiguracion {
         this.procesosCargados = procesosCargados;
     }
 
-//    private static class ConfigProceso {
-//
-//        public ConfigProceso() {
-//        }
-//    }
-    
+    public int getQuantum() {
+        return quantum;
+    }
+
+    public void setQuantum(int quantum) {
+        this.quantum = quantum;
+    }
     
     
 }

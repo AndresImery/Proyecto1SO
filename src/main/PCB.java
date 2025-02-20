@@ -67,8 +67,15 @@ public class PCB {
 
     // Métodos para interrupciones (I/O bound)
     public boolean generaExcepcion() {
-        if (esCPUBound) return false;
-        return (instruccionesEjecutadas % ciclosPorExcepcion == 0);
+        return !esCPUBound && instruccionesEjecutadas >= ciclosPorExcepcion;
+    }
+    
+    public boolean listoParaDesbloqueo() {
+        return (ciclosParaDesbloqueo <= ciclosEnBloqueo);
+    }
+    
+    public void resetCicloBloqueo() {
+        this.ciclosEnBloqueo = 0;
     }
 
     // Métodos para manejar tiempos
@@ -99,9 +106,17 @@ public class PCB {
     public int getInstruccionesTotales() {
         return instruccionesTotales;
     }
+    
+    public int getInstruccionesRestantes() {
+        return (instruccionesTotales - instruccionesEjecutadas);
+    }
 
     public boolean esCPUBound() {
         return esCPUBound;
+    }
+    
+    public boolean esIOBound() {
+        return !esCPUBound;
     }
 
     public int getTiempoEspera() {
