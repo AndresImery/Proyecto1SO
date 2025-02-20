@@ -1,8 +1,0 @@
-DuracionCiclo,NumCPUs
-500,3
-Nombre,Instrucciones,Tipo,CiclosPorExcepcion,CiclosParaDesbloqueo
-P1,10,CPU,0,0
-P2,15,IO,3,2
-P3,20,CPU,0,0
-P4,25,IO,5,3
-P5,30,CPU,0,0

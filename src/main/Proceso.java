@@ -13,7 +13,7 @@ import main.PCB.Estado;
 public class Proceso {
     private PCB pcb;
 
-    public Proceso(String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, Estado estado, int tiempoEspera, int tiempoServicio, int tiempoLlegada) {
+    public Proceso(String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, int tiempoLlegada) {
         this.pcb = new PCB(nombre, instruccionesTotales, esCPUBound, ciclosPorExcepcion, ciclosParaDesbloqueo, tiempoLlegada);
     }
     

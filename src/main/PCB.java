@@ -18,6 +18,7 @@ public class PCB {
     private boolean esCPUBound;
     private int ciclosPorExcepcion;
     private int ciclosParaDesbloqueo;
+    private int ciclosEnBloqueo;
     private int tiempoEspera;
     private int tiempoServicio;
     private int tiempoLlegada;
@@ -33,11 +34,12 @@ public class PCB {
         this.instruccionesTotales = instruccionesTotales;
         this.instruccionesEjecutadas = 0;
         this.esCPUBound = esCPUBound;
-        this.ciclosPorExcepcion = ciclosPorExcepcion;
-        this.ciclosParaDesbloqueo = ciclosParaDesbloqueo;
-        this.tiempoEspera = 0;
-        this.tiempoServicio = 0;
-        this.tiempoLlegada = tiempoLlegada;
+        this.ciclosPorExcepcion = ciclosPorExcepcion; // Cada cuántos ciclos el proceso genera una interrupción (si es I/O-bound)
+        this.ciclosParaDesbloqueo = ciclosParaDesbloqueo; // Cuántos ciclos debe esperar en bloqueo antes de volver a listos
+        this.ciclosEnBloqueo = 0; // Cuánto tiempo ha estado en la cola de bloqueados
+        this.tiempoEspera = 0; // Tiempo total que ha esperado en la cola de listos
+        this.tiempoServicio = 0; // Tiempo total de ejecución en la CPU
+        this.tiempoLlegada = tiempoLlegada; // Ciclo de reloj en el que el proceso ingresó al sistema
     }
     
     

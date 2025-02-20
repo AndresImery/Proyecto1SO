@@ -16,8 +16,10 @@ public class Proyecto1SO {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Gson gson = new Gson();
-        System.out.println("✅ Gson instalado correctamente.");
+        GestorConfiguracion gestor = new GestorConfiguracion();
+        
+        
+        gestor.cargarDesdeJSON();
     }
     
 }
