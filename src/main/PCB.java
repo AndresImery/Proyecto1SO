@@ -19,6 +19,7 @@ public class PCB {
     private int ciclosPorExcepcion;
     private int ciclosParaDesbloqueo;
     private int ciclosEnBloqueo;
+    private int ciclosSeguidosEjecucion;
     private int tiempoEspera;
     private int tiempoServicio;
     private int tiempoLlegada;
@@ -37,6 +38,7 @@ public class PCB {
         this.ciclosPorExcepcion = ciclosPorExcepcion; // Cada cuántos ciclos el proceso genera una interrupción (si es I/O-bound)
         this.ciclosParaDesbloqueo = ciclosParaDesbloqueo; // Cuántos ciclos debe esperar en bloqueo antes de volver a listos
         this.ciclosEnBloqueo = 0; // Cuánto tiempo ha estado en la cola de bloqueados
+        this.ciclosSeguidosEjecucion = 0;
         this.tiempoEspera = 0; // Tiempo total que ha esperado en la cola de listos
         this.tiempoServicio = 0; // Tiempo total de ejecución en la CPU
         this.tiempoLlegada = tiempoLlegada; // Ciclo de reloj en el que el proceso ingresó al sistema
@@ -58,6 +60,7 @@ public class PCB {
         if (programCounter < instruccionesTotales) {
             programCounter++;
             instruccionesEjecutadas++;
+            ciclosSeguidosEjecucion++;
         }
     }
 
@@ -67,7 +70,11 @@ public class PCB {
 
     // Métodos para interrupciones (I/O bound)
     public boolean generaExcepcion() {
-        return !esCPUBound && instruccionesEjecutadas >= ciclosPorExcepcion;
+        if (!esCPUBound && ciclosSeguidosEjecucion >= ciclosPorExcepcion) {
+            ciclosSeguidosEjecucion = 0;
+            return true;
+        }
+        return false;
     }
     
     public boolean listoParaDesbloqueo() {
@@ -76,6 +83,10 @@ public class PCB {
     
     public void resetCicloBloqueo() {
         this.ciclosEnBloqueo = 0;
+    }
+    
+    public void incrementarCiclosEnBloqueo() {
+        this.ciclosEnBloqueo++;
     }
 
     // Métodos para manejar tiempos

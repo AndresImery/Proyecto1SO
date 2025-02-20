@@ -16,44 +16,68 @@ public class CPU extends Thread {
     private Kernel kernel;
     private Semaphore mutex;
     private int quantum;
-//    private int quantumAsignado;
+    private int ciclosEjecutados;
+    private boolean enEjecucion;
 
     // Constructor
-    public CPU(Kernel kernel, int quantum) {
-        this.cpuId = cpuId++;
+    public CPU(int cpuId, Kernel kernel, int quantum) {
+        this.cpuId = cpuId;
         this.kernel = kernel;
         this.quantum = quantum;
-        this.mutex = new Semaphore(1); // Mutex para simular acceso exclusivo a la CPU
+        this.mutex = new Semaphore(0); // Mutex para simular acceso exclusivo a la CPU
+        this.ciclosEjecutados = 0;
+        this.enEjecucion = true;
     }
     
     // Método principal de ejecución del hilo
     @Override
     public void run() {
-        while (true) {  // Simulación infinita hasta que el sistema termine
+        while (enEjecucion) {  // Simulación infinita hasta que el sistema termine
             try {
-                mutex.acquire(); // Bloquea la CPU hasta que haya un proceso asignado
+                if (procesoActual == null) {
+                    mutex.acquire(); // Bloquea la CPU hasta que haya un proceso asignado
+                }
                 if (procesoActual != null) {
                     ejecutarProceso();
+//                    mutex.release();
+                } else {
+//                    mutex.release();
+                    Thread.sleep(kernel.getGestor().getDuracionCiclo());
                 }
-                mutex.release();
+                 
             } catch (InterruptedException e) {
-                System.out.println("⚠ CPU " + cpuId + " interrumpida.");
+                System.out.println("🔴 CPU " + cpuId + " apagada.");
             }
         }
+//        System.out.println("🔴 CPU " + cpuId + " apagada.");
     }
     
     // Método para asignar un proceso a la CPU
     public void asignarProceso(Proceso proceso) {
         this.procesoActual = proceso;
+        this.ciclosEjecutados = 0;
         mutex.release(); // Permite la ejecución
     }
     
     // Método para ejecutar instrucciones del proceso
     private void ejecutarProceso() {
-        System.out.println("✅ CPU " + cpuId + " ejecutando: " + procesoActual.getPCB().getNombre());
+        
+        if (procesoActual == null) {
+//            System.out.println("⚠ CPU " + cpuId + " no tiene proceso asignado.");
+            return;
+        }
+            
+//        System.out.println("✅ CPU " + cpuId + " ejecutando: " + procesoActual.getPCB().getNombre());
 
-        int ciclosEjecutados = 0;
-        while (ciclosEjecutados < quantum && procesoActual.getPCB().getInstruccionesRestantes() > 0) {
+//        int ciclosEjecutados = 0;
+        while (procesoActual.getPCB().getInstruccionesRestantes() > 0) {
+            if (kernel.isQuantum() && ciclosEjecutados >= quantum) {
+                System.out.println("Quantum agotado en CPU " + cpuId);
+                kernel.prepararProceso(procesoActual);
+                procesoActual = null;
+                return;
+            }
+
             procesoActual.ejecutarInstruccion();
             ciclosEjecutados++;
 
@@ -67,23 +91,23 @@ public class CPU extends Thread {
 
             // Simular tiempo de ejecución
             try {
-                Thread.sleep(100); // Simula el tiempo de ciclo de instrucción
+                Thread.sleep(kernel.getGestor().getDuracionCiclo()); // Simula el tiempo de ciclo de instrucción
             } catch (InterruptedException e) {
                 System.out.println("⚠ CPU " + cpuId + " interrumpida.");
             }
         }
+        
 
-        // Si el proceso terminó todas sus instrucciones
-        if (procesoActual.getPCB().getInstruccionesRestantes() == 0) {
-            System.out.println("✅ Proceso " + procesoActual.getPCB().getNombre() + " finalizado en CPU " + cpuId);
-            kernel.finalizarProceso(procesoActual);
-        } else {
-            // Si es Round Robin, debe volver a la cola de listos
-            System.out.println("⏳ Quantum agotado para " + procesoActual.getPCB().getNombre() + " en CPU " + cpuId);
-            kernel.prepararProceso(procesoActual);
-        }
-
+        
+        
+        System.out.println("✅ Proceso " + procesoActual.getPCB().getNombre() + " finalizado en CPU " + cpuId);
+        kernel.finalizarProceso(procesoActual);
         procesoActual = null;
+    }
+    
+    public void detenerCPU() {
+        enEjecucion = false;
+        this.interrupt(); // Interrumpe el `Thread.sleep()` si está esperando
     }
     
     public boolean estaLibre() {
@@ -93,6 +117,12 @@ public class CPU extends Thread {
     public int getCpuId() {
         return cpuId;
     }
+
+    public Proceso getProcesoActual() {
+        return procesoActual;
+    }
+    
+    
     
     /** TO-DO
      * public void run(); // Hilo que ejecuta procesos

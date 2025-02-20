@@ -28,7 +28,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             proceso.setEstado(PCB.Estado.LISTO);
             colaListos.add(proceso);
-            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " agregado a la cola de listos.");
+            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo.");
         }
     }
     
@@ -52,21 +52,16 @@ public class MemoriaPrincipal {
         }
     }
     
+    // Remover un proceso de cualquier cola en la que esté
     public boolean removerProceso(Proceso proceso) {
-        if (colaListos.remove(proceso) != null) {
-            System.out.println("✅ Proceso " + proceso.getPCB().getNombre() + " eliminado de la cola de listos.");
-            return true;
-        }
-        if (colaBloqueados.remove(proceso) != null) {
-            System.out.println("✅ Proceso " + proceso.getPCB().getNombre() + " eliminado de la cola de bloqueados.");
-            return true;
-        }
-        if (colaTerminados.remove(proceso) != null) {
-            System.out.println("✅ Proceso " + proceso.getPCB().getNombre() + " eliminado de la cola de terminados.");
-            return true;
-        }
-        System.out.println("No se encontró el proceso en ninguna cola.");
-        return false;
+        boolean eliminado = colaListos.remove(proceso) != null || colaBloqueados.remove(proceso) != null || colaTerminados.remove(proceso) != null;
+
+//        if (eliminado) {
+//            System.out.println("✅ Proceso " + proceso.getPCB().getNombre() + " eliminado de su cola actual.");
+//        } else {
+//            System.out.println("⚠ No se encontró el proceso en ninguna cola.");
+//        }
+        return eliminado;
     }
     
     public Proceso obtenerDeListos() {
@@ -80,20 +75,18 @@ public class MemoriaPrincipal {
     // Mover un proceso de bloqueados a listos cuando cumpla su tiempo de I/O
     public void desbloquearProcesos() {
         LinkedList<Proceso> procesosADesbloquear = new LinkedList<>();
-
         Node<Proceso> aux = colaBloqueados.getHead();
-        if (aux != null) {
-            Proceso data = aux.getData();
-            if (data.getPCB().listoParaDesbloqueo()) {
-                procesosADesbloquear.add(data);
+
+        // Recorrer la cola de bloqueados para identificar procesos listos para desbloqueo
+        while (aux != null) {
+            Proceso proceso = aux.getData();
+            if (proceso.getPCB().listoParaDesbloqueo()) {
+                proceso.getPCB().resetCicloBloqueo();
+                procesosADesbloquear.add(proceso);
+            } else {
+                proceso.getPCB().incrementarCiclosEnBloqueo();
             }
-            while (aux.getNext() != null) {
-                data = aux.getNext().getData();
-                if (data.getPCB().listoParaDesbloqueo()) {
-                    procesosADesbloquear.add(data);
-                }
-                aux = aux.getNext();
-            }
+            aux = aux.getNext();
         }
 //        for (Proceso proceso : colaBloqueados) {
 //            if (proceso.getPCB().listoParaDesbloqueo()) {
@@ -101,20 +94,16 @@ public class MemoriaPrincipal {
 //            }
 //        }
 
+        // Mover los procesos de bloqueados a listos
         aux = procesosADesbloquear.getHead();
-        if (aux != null) {
+        while (aux != null) {
             Proceso proceso = aux.getData();
-            colaBloqueados.remove(proceso);
+            removerProceso(proceso);
+            System.out.println("Proceso " + proceso.getPCB().getNombre() + " paso a listos");
+            proceso.getPCB().setEstado(PCB.Estado.LISTO);
             agregarAListos(proceso);
-            proceso.getPCB().resetCicloBloqueo();
-            while (aux.getNext() != null) {
-                proceso = aux.getNext().getData();
-                colaBloqueados.remove(proceso);
-                agregarAListos(proceso);
-                proceso.getPCB().resetCicloBloqueo();
-                
-                aux = aux.getNext();
-            }
+//            proceso.getPCB().resetCicloBloqueo(); // Restablecer contador de espera
+            aux = aux.getNext();
         }
 
 //        for (Proceso proceso : procesosADesbloquear) {
@@ -124,11 +113,29 @@ public class MemoriaPrincipal {
 //        }
     }
     
-    public boolean todosLosProcesosFinalizados() {
+    public boolean todosLosProcesosFinalizados(LinkedList<CPU> cpus) {
         if (colaListos.isEmpty() && colaBloqueados.isEmpty()) {
+            Node<CPU> aux = cpus.getHead();
+            while (aux != null) {
+                CPU cpu = aux.getData();
+                if (!cpu.estaLibre()) { return false; }
+                aux = aux.getNext();
+            }
             return true;
         }
         return false;
+    }
+
+    public LinkedList<Proceso> getColaListos() {
+        return colaListos;
+    }
+
+    public LinkedList<Proceso> getColaBloqueados() {
+        return colaBloqueados;
+    }
+
+    public LinkedList<Proceso> getColaTerminados() {
+        return colaTerminados;
     }
     
     // Métodos auxiliares

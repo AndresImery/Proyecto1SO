@@ -1,5 +1,5 @@
 {
-  "DuracionCiclo": 500,
+  "DuracionCiclo": 1000,
   "NumCPUs": 3,
   "Procesos": [
     {

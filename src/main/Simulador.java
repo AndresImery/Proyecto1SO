@@ -15,12 +15,29 @@ public class Simulador {
     private Planificador planificador;
     private LinkedList<CPU> cpus;
     private int duracionCiclo;
+    private GestorConfiguracion gestor;
 
-    public Simulador(Planificador planificador, LinkedList<CPU> cpus, int duracionCiclo) {
+    public Simulador(GestorConfiguracion gestor) {
         this.memoria = new MemoriaPrincipal();
         this.planificador = new Planificador(memoria);
         this.cpus = new LinkedList<CPU>();
         this.duracionCiclo = duracionCiclo;
+        this.gestor = gestor;
+    }
+    
+    public void start() {
+        setup();
+        
+//        Node<CPU> aux = gestor.getProcesosCargados();
+    }
+    
+    public void setup() {
+        if (false) {
+        for (int i = 0; i < gestor.getNumCPUs(); i++) {
+//            CPU cpu = new CPU(/** data */);
+//            cpus.add(cpu);
+        }
+        }
     }
 
     public Planificador getPlanificador() {
