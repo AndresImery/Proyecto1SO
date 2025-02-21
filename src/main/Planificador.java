@@ -16,12 +16,14 @@ public class Planificador {
     private String algoritmoActual;
     private int quantum;  // Para Round Robin
     private int quantumRestante;  // Control del Quantum por proceso
+    private Kernel kernel;
 
-    public Planificador(MemoriaPrincipal memoria) {
+    public Planificador(MemoriaPrincipal memoria, Kernel kernel) {
         this.memoria = memoria;
         this.algoritmoActual = "FCFS";
         this.quantum = 5;  // Valor por defecto para Round Robin
         this.quantumRestante = quantum;
+        this.kernel = kernel;
     }
     
     // Seleccionar un proceso de la cola de listos según el algoritmo
@@ -31,7 +33,7 @@ public class Planificador {
 //        System.out.println("Total en bloqueados: " + memoria.getCantidadBloqueados());
 //        System.out.println("Total en terminados: " + memoria.getCantidadTerminados());
 
-        if (memoria.getCantidadListos() == 0) {
+        if (memoria.getCantidadListos() == 0 && !algoritmoActual.equals("Feedback")) {
 //            System.out.println("⚠ No hay procesos en la cola de listos.");
             return null;
         }
@@ -39,19 +41,25 @@ public class Planificador {
         Proceso procesoSeleccionado = null;
 
         switch (algoritmoActual) {
-            case "FCFS":
+            case "FCFS": // First Come First Serve (FIFO)
                 procesoSeleccionado = memoria.obtenerDeListos();
                 break;
-
-            case "SJF": // Shortest Job First
-                procesoSeleccionado = seleccionarProcesoSJF();
+            case "SPN": // 
+                procesoSeleccionado = seleccionarProcesoSPN();
                 break;
-
-            case "RR": // Round Robin
+            case "SRT":
+                procesoSeleccionado = seleccionarProcesoSRT(false);
+                break;
+            case "HRRN":
+                procesoSeleccionado = seleccionarProcesoHRRN();
+                break;
+            case "RR":
                 procesoSeleccionado = memoria.obtenerDeListos();
-                quantumRestante = quantum; // Reiniciar el quantum
+                quantumRestante = quantum;
                 break;
-
+            case "Feedback":
+                procesoSeleccionado = seleccionarProcesoFeedback();
+                break;
             default:
                 System.out.println("⚠ Algoritmo no reconocido. Usando FCFS.");
                 procesoSeleccionado = memoria.obtenerDeListos();
@@ -65,8 +73,8 @@ public class Planificador {
         return procesoSeleccionado;
     }
     
-    // Implementación del algoritmo SJF (Shortest Job First)
-    private Proceso seleccionarProcesoSJF() {
+    // Implementación del algoritmo SPN (Shortest Process Next)
+    private Proceso seleccionarProcesoSPN() {
         Node<Proceso> aux = memoria.getColaListos().getHead();
         Proceso procesoMenor = null;
 
@@ -85,6 +93,59 @@ public class Planificador {
         return procesoMenor;
     }
     
+    // Shortest Remaining Time
+    public Proceso seleccionarProcesoSRT(boolean peek) {
+        Node<Proceso> aux = memoria.getColaListos().getHead();
+        Proceso procesoMenor = null;
+        while (aux != null) {
+            Proceso actual = aux.getData();
+            if (procesoMenor == null || actual.getPCB().getInstruccionesRestantes() < procesoMenor.getPCB().getInstruccionesRestantes()) {
+                procesoMenor = actual;
+            }
+            aux = aux.getNext();
+        }
+        if (procesoMenor != null && !peek) {
+            memoria.removerProceso(procesoMenor);
+        }
+        return procesoMenor;
+    }
+    
+    // Highest Response Ratio Next (RR = (w + s) / s)
+    private Proceso seleccionarProcesoHRRN() {
+        Node<Proceso> aux = memoria.getColaListos().getHead();
+        Proceso mejorProceso = null;
+        double mejorRatio = -1;
+        while (aux != null) {
+            Proceso actual = aux.getData();
+            double w = actual.getPCB().getTiempoEspera();
+            double s = actual.getPCB().getInstruccionesRestantes();
+            double responseRatio = (w + s) / s;
+            if (responseRatio > mejorRatio) {
+                mejorRatio = responseRatio;
+                mejorProceso = actual;
+            }
+            aux = aux.getNext();
+        }
+        if (mejorProceso != null) {
+            memoria.removerProceso(mejorProceso);
+        }
+        return mejorProceso;
+    }
+    
+    // Feedback (Prioridades y Quantum)
+    private Proceso seleccionarProcesoFeedback() {
+        Proceso proceso;
+        // Prioridad: Primero Q1, luego Q2, luego Q3
+        if (!memoria.getColaQ1().isEmpty()) {
+            return memoria.getColaQ1().removeFirst();
+        } else if (!memoria.getColaQ2().isEmpty()) {
+            return memoria.getColaQ2().removeFirst();
+        } else if (!memoria.getColaQ3().isEmpty()) {
+            return memoria.getColaQ3().removeFirst();
+        }
+        return null; // No hay procesos en ninguna cola de Feedback
+    }
+    
     // Bloquear un proceso (cuando genera una interrupción de I/O)
     public void bloquearProceso(Proceso proceso) {
         if (proceso != null) {
@@ -94,7 +155,24 @@ public class Planificador {
     
     public void prepararProceso(Proceso proceso) {
         if (proceso != null) {
-            memoria.agregarAListos(proceso);
+            if (algoritmoActual.equals("Feedback")) {
+                switch (proceso.getPCB().getPrioridad()) {
+                    case "Q1":
+                        memoria.agregarAColaQ1(proceso);
+                        break;
+                    case "Q2":
+                        memoria.agregarAColaQ2(proceso);
+                        break;
+                    case "Q3":
+                        memoria.agregarAColaQ3(proceso);
+                        break;
+                }
+            } else {
+                memoria.agregarAListos(proceso);
+                if (algoritmoActual.equals("SRT")) {
+                    kernel.forzarProceso();
+                }
+            }
         }
     }
     

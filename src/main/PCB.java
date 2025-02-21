@@ -23,12 +23,13 @@ public class PCB {
     private int tiempoEspera;
     private int tiempoServicio;
     private int tiempoLlegada;
+    private String prioridad;
     
     public enum Estado { LISTO, EJECUTANDO, BLOQUEADO, TERMINADO }
 
     // Constructor
-    public PCB(String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, int tiempoLlegada) {
-        this.processId = processId++;
+    public PCB(int id, String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, int tiempoLlegada, String prioridad) {
+        this.processId = id;
         this.nombre = nombre;
         this.estado = Estado.LISTO;
         this.programCounter = 0;
@@ -42,6 +43,7 @@ public class PCB {
         this.tiempoEspera = 0; // Tiempo total que ha esperado en la cola de listos
         this.tiempoServicio = 0; // Tiempo total de ejecución en la CPU
         this.tiempoLlegada = tiempoLlegada; // Ciclo de reloj en el que el proceso ingresó al sistema
+        this.prioridad = prioridad;
     }
     
     
@@ -94,6 +96,10 @@ public class PCB {
         this.tiempoEspera++;
     }
 
+    public void setTiempoEspera(int tiempoEspera) {
+        this.tiempoEspera = tiempoEspera;
+    }
+
     public void incrementarTiempoServicio() {
         this.tiempoServicio++;
     }
@@ -144,6 +150,22 @@ public class PCB {
 
     public int getCiclosParaDesbloqueo() {
         return ciclosParaDesbloqueo;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
+    }
+    
+    public int getMAR() {
+        return processId + programCounter;
+    }
+    
+    public int getProcesoId() {
+        return processId;
     }
 
     @Override

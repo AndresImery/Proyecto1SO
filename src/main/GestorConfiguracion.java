@@ -23,6 +23,7 @@ public class GestorConfiguracion {
     private LinkedList<Proceso> procesosCargados;
     private ArrayList<ConfigProceso> auxProcesos;
     private int quantum;
+    private String algoritmoActual;
 
     // Constructor
     public GestorConfiguracion() {
@@ -32,10 +33,13 @@ public class GestorConfiguracion {
         this.procesosCargados = new LinkedList<Proceso>();
         this.auxProcesos = new ArrayList<>();
         this.quantum = 5;
+        this.algoritmoActual = "FCFS";
     }
     
     // Cargar configuración desde JSON con Gson
     public void cargarDesdeJSON() {
+        procesosCargados = new LinkedList<Proceso>();
+        auxProcesos = new ArrayList<>();
         try (Reader reader = new FileReader(rutaArchivo)) {
             Gson gson = new Gson();
             Configuracion config = gson.fromJson(reader, Configuracion.class);
@@ -45,6 +49,7 @@ public class GestorConfiguracion {
             System.out.println("Duración del Ciclo: " + config.DuracionCiclo);
             System.out.println("Número de CPUs: " + config.NumCPUs);
 
+            int counter = 0;
             for (ConfigProceso data : config.Procesos) {
                 System.out.println("Cargando proceso: " + data.nombre);
                 System.out.println("  - Instrucciones Totales: " + data.instruccionesTotales);
@@ -54,6 +59,7 @@ public class GestorConfiguracion {
 
                 // Crear objeto Proceso y agregarlo a la lista de procesos cargados
                 Proceso newProcess = new Proceso(
+                    counter,
                     data.nombre, 
                     data.instruccionesTotales, 
                     data.esCPUBound, 
@@ -62,7 +68,7 @@ public class GestorConfiguracion {
                     0  // Suponiendo que el ID se maneja automáticamente
                         
                 );
-                
+                counter++;
                 procesosCargados.add(newProcess);
             }
 
@@ -77,6 +83,7 @@ public class GestorConfiguracion {
         try (Writer writer = new FileWriter(rutaArchivo)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             auxProcesos = new ArrayList<ConfigProceso>();
+            
             
             Node<Proceso> aux = procesosCargados.getHead();
             PCB data = aux.getData().getPCB();
@@ -169,6 +176,12 @@ public class GestorConfiguracion {
     public void setQuantum(int quantum) {
         this.quantum = quantum;
     }
-    
-    
+
+    public String getAlgoritmoActual() {
+        return algoritmoActual;
+    }
+
+    public void setAlgoritmoActual(String algoritmoActual) {
+        this.algoritmoActual = algoritmoActual;
+    }
 }

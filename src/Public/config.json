@@ -1,17 +1,17 @@
 {
-  "DuracionCiclo": 1000,
+  "DuracionCiclo": 500,
   "NumCPUs": 3,
   "Procesos": [
     {
       "nombre": "P1",
-      "instruccionesTotales": 10,
+      "instruccionesTotales": 30,
       "esCPUBound": true,
       "ciclosPorExcepcion": 0,
       "ciclosParaDesbloqueo": 0
     },
     {
       "nombre": "P2",
-      "instruccionesTotales": 15,
+      "instruccionesTotales": 25,
       "esCPUBound": false,
       "ciclosPorExcepcion": 3,
       "ciclosParaDesbloqueo": 2
@@ -25,17 +25,24 @@
     },
     {
       "nombre": "P4",
-      "instruccionesTotales": 25,
+      "instruccionesTotales": 15,
       "esCPUBound": false,
       "ciclosPorExcepcion": 5,
       "ciclosParaDesbloqueo": 3
     },
     {
       "nombre": "P5",
-      "instruccionesTotales": 30,
+      "instruccionesTotales": 10,
       "esCPUBound": true,
       "ciclosPorExcepcion": 0,
       "ciclosParaDesbloqueo": 0
+    },
+    {
+      "nombre": "P6",
+      "instruccionesTotales": 14,
+      "esCPUBound": false,
+      "ciclosPorExcepcion": 4,
+      "ciclosParaDesbloqueo": 2
     }
   ]
 }

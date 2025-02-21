@@ -15,11 +15,19 @@ public class MemoriaPrincipal {
     private LinkedList<Proceso> colaListos;
     private LinkedList<Proceso> colaBloqueados;
     private LinkedList<Proceso> colaTerminados;
+    private LinkedList<Proceso> colaQ1;
+    private LinkedList<Proceso> colaQ2;
+    private LinkedList<Proceso> colaQ3;
+    private Kernel kernel;
 
-    public MemoriaPrincipal() {
+    public MemoriaPrincipal(Kernel kernel) {
         this.colaListos = new LinkedList<Proceso>();
         this.colaBloqueados = new LinkedList<Proceso>();
         this.colaTerminados = new LinkedList<Proceso>();
+        this.colaQ1 = new LinkedList<Proceso>();
+        this.colaQ2 = new LinkedList<Proceso>();
+        this.colaQ3 = new LinkedList<Proceso>();
+        this.kernel = kernel;
     }
     
     // Agregar un proceso a la cola de listos
@@ -29,6 +37,33 @@ public class MemoriaPrincipal {
             proceso.setEstado(PCB.Estado.LISTO);
             colaListos.add(proceso);
             System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo.");
+        }
+    }
+    
+    public void agregarAColaQ1(Proceso proceso) {
+        if (proceso != null) {
+            removerProceso(proceso);
+            proceso.setEstado(PCB.Estado.LISTO);
+            colaQ1.add(proceso);
+            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo Q1.");
+        }
+    }
+    
+    public void agregarAColaQ2(Proceso proceso) {
+        if (proceso != null) {
+            removerProceso(proceso);
+            proceso.setEstado(PCB.Estado.LISTO);
+            colaQ2.add(proceso);
+            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo Q2.");
+        }
+    }
+    
+    public void agregarAColaQ3(Proceso proceso) {
+        if (proceso != null) {
+            removerProceso(proceso);
+            proceso.setEstado(PCB.Estado.LISTO);
+            colaQ3.add(proceso);
+            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo Q3.");
         }
     }
     
@@ -101,7 +136,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             System.out.println("Proceso " + proceso.getPCB().getNombre() + " paso a listos");
             proceso.getPCB().setEstado(PCB.Estado.LISTO);
-            agregarAListos(proceso);
+            kernel.prepararProceso(proceso);
 //            proceso.getPCB().resetCicloBloqueo(); // Restablecer contador de espera
             aux = aux.getNext();
         }
@@ -114,7 +149,7 @@ public class MemoriaPrincipal {
     }
     
     public boolean todosLosProcesosFinalizados(LinkedList<CPU> cpus) {
-        if (colaListos.isEmpty() && colaBloqueados.isEmpty()) {
+        if (colaListos.isEmpty() && colaBloqueados.isEmpty() && colaQ1.isEmpty() && colaQ2.isEmpty() && colaQ3.isEmpty()) {
             Node<CPU> aux = cpus.getHead();
             while (aux != null) {
                 CPU cpu = aux.getData();
@@ -150,4 +185,42 @@ public class MemoriaPrincipal {
     public int getCantidadTerminados() { 
         return colaTerminados.getSize(); 
     }
+    
+    public int getCantidadQ1() { 
+        return colaQ1.getSize(); 
+    }
+    
+    public int getCantidadQ2() { 
+        return colaQ2.getSize(); 
+    }
+    
+    public int getCantidadQ3() { 
+        return colaQ3.getSize(); 
+    }
+
+    public LinkedList<Proceso> getColaQ1() {
+        return colaQ1;
+    }
+
+    public void setColaQ1(LinkedList<Proceso> colaQ1) {
+        this.colaQ1 = colaQ1;
+    }
+
+    public LinkedList<Proceso> getColaQ2() {
+        return colaQ2;
+    }
+
+    public void setColaQ2(LinkedList<Proceso> colaQ2) {
+        this.colaQ2 = colaQ2;
+    }
+
+    public LinkedList<Proceso> getColaQ3() {
+        return colaQ3;
+    }
+
+    public void setColaQ3(LinkedList<Proceso> colaQ3) {
+        this.colaQ3 = colaQ3;
+    }
+    
+    
 }

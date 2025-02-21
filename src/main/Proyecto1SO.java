@@ -4,7 +4,7 @@
  */
 package main;
 
-import com.google.gson.Gson;
+import interfaz.VentanaConfiguracion;
 
 /**
  *
@@ -16,17 +16,19 @@ public class Proyecto1SO {
      * @param args the command line arguments
      */
     public static void main(String[] args) {        
-        System.out.println("Iniciando Sistema Operativo...");
+        VentanaConfiguracion vc = new VentanaConfiguracion();
+//        System.out.println("Iniciando Sistema Operativo...");
 
         // Cargar configuración
-        GestorConfiguracion gestor = new GestorConfiguracion();
-        gestor.cargarDesdeJSON();
+//        GestorConfiguracion gestor = new GestorConfiguracion();
+//        gestor.cargarDesdeJSON();
 
         // Inicializar Kernel con la configuración
-        Kernel kernel = new Kernel(gestor);
+//        Kernel kernel = new Kernel(gestor);
+//        kernel.getPlanificador().setAlgoritmoActual("HRRN");
 
         // Iniciar la simulación
-        kernel.run();
+//        kernel.run();
     }
     
 }

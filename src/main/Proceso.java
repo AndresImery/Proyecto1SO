@@ -13,8 +13,8 @@ import main.PCB.Estado;
 public class Proceso {
     private PCB pcb;
 
-    public Proceso(String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, int tiempoLlegada) {
-        this.pcb = new PCB(nombre, instruccionesTotales, esCPUBound, ciclosPorExcepcion, ciclosParaDesbloqueo, tiempoLlegada);
+    public Proceso(int id, String nombre, int instruccionesTotales, boolean esCPUBound, int ciclosPorExcepcion, int ciclosParaDesbloqueo, int tiempoLlegada) {
+        this.pcb = new PCB(id, nombre, instruccionesTotales, esCPUBound, ciclosPorExcepcion, ciclosParaDesbloqueo, tiempoLlegada, "Q1");
     }
     
     /** TO-DO
