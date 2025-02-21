@@ -36,7 +36,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             proceso.setEstado(PCB.Estado.LISTO);
             colaListos.add(proceso);
-            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo.");
+            System.out.println("Proceso " + proceso.getPCB().getNombre() + " listo.");
         }
     }
     
@@ -45,7 +45,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             proceso.setEstado(PCB.Estado.LISTO);
             colaQ1.add(proceso);
-            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo Q1.");
+            System.out.println("Proceso " + proceso.getPCB().getNombre() + " listo Q1.");
         }
     }
     
@@ -54,7 +54,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             proceso.setEstado(PCB.Estado.LISTO);
             colaQ2.add(proceso);
-            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo Q2.");
+            System.out.println("Proceso " + proceso.getPCB().getNombre() + " listo Q2.");
         }
     }
     
@@ -63,7 +63,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             proceso.setEstado(PCB.Estado.LISTO);
             colaQ3.add(proceso);
-            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " listo Q3.");
+            System.out.println("Proceso " + proceso.getPCB().getNombre() + " listo Q3.");
         }
     }
     
@@ -73,7 +73,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             proceso.setEstado(PCB.Estado.BLOQUEADO);
             colaBloqueados.add(proceso);
-            System.out.println("🔴 Proceso " + proceso.getPCB().getNombre() + " bloqueado.");
+            System.out.println("Proceso " + proceso.getPCB().getNombre() + " bloqueado.");
         }
     }
     
@@ -83,7 +83,7 @@ public class MemoriaPrincipal {
             removerProceso(proceso);
             proceso.setEstado(PCB.Estado.TERMINADO);
             colaTerminados.add(proceso);
-            System.out.println("✔ Proceso " + proceso.getPCB().getNombre() + " terminado.");
+            System.out.println("Proceso " + proceso.getPCB().getNombre() + " terminado.");
         }
     }
     
@@ -91,11 +91,6 @@ public class MemoriaPrincipal {
     public boolean removerProceso(Proceso proceso) {
         boolean eliminado = colaListos.remove(proceso) != null || colaBloqueados.remove(proceso) != null || colaTerminados.remove(proceso) != null;
 
-//        if (eliminado) {
-//            System.out.println("✅ Proceso " + proceso.getPCB().getNombre() + " eliminado de su cola actual.");
-//        } else {
-//            System.out.println("⚠ No se encontró el proceso en ninguna cola.");
-//        }
         return eliminado;
     }
     

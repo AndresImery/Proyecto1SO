@@ -56,7 +56,7 @@ public class Kernel extends Thread {
             memoria.setColaDeListos(gestor.getProcesosCargados());
         }
         
-//         ✅ Usamos Timer para actualizar la interfaz cada 100ms
+//         Usamos Timer para actualizar la interfaz cada 100ms
             Timer timer = new Timer(100, e -> actualizarInterfaz());
             timer.start();
         
@@ -151,15 +151,15 @@ public class Kernel extends Thread {
     public void detenerKernel() {
         actualizarInterfaz();
         enEjecucion = false;
-        System.out.println("🛑 Deteniendo todas las CPU...");
+        System.out.println("Deteniendo todas las CPU...");
 
         Node<CPU> aux = cpus.getHead();
         while (aux != null) {
-            aux.getData().detenerCPU(); // ✅ Llama a detenerCPU() en cada CPU
+            aux.getData().detenerCPU(); // Llama a detenerCPU() en cada CPU
             aux = aux.getNext();
         }
 
-        System.out.println("✅ Simulación finalizada.");
+        System.out.println("Simulación finalizada.");
     }
     
     // Interrumpe el CPU que ejecuta el proceso con mayor cantidad de Instrucciones Restantes;
